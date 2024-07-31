@@ -62,16 +62,16 @@ str = 'recording';
 % waiting for input. If the input is from 1-6, show the signal of corresponding channel.
 % recording is stopped only when you input 'stop'
 while (~strcmp(str,'stop'))
-	str = input('input number to change observation or input ''stop'' to stop recording\n','s');
-	num = str2double(str);
-	if ((num >= 1) && (num <= chan_num))
-		param.dispCH = round(num);
-		param.dispSig = zeros(1,fs);
-		param.dispPos = 1;
-		param.specData = zeros(param.specYLen,param.specXLen);
-		param.specCalPos = 1;
-		param.specXPos = 1;
-	end
+	str = input('input ''stop'' to stop recording\n','s');
+% 	num = str2double(str);
+% 	if ((num >= 1) && (num <= chan_num))
+% 		param.dispCH = round(num);
+% 		param.dispSig = zeros(1,fs);
+% 		param.dispPos = 1;
+% 		param.specData = zeros(param.specYLen,param.specXLen);
+% 		param.specCalPos = 1;
+% 		param.specXPos = 1;
+% 	end
 end
 
 stop(ses);
@@ -99,27 +99,27 @@ function logData(src, evt, prefix)
 	    param.index = param.index+1;% increase number of index
 	    param.filename = [prefix, '_',num2str(param.index),'.bin'];	% new file name
 	    param.fid = fopen(param.filename,'w');
-	    %disp(['change record file to ',param.filename]);
+	    disp(['change record file to ',param.filename]);
     end
-
-    param.dispSig(mod(param.dispPos+(0:lenRx-1)-1,param.dispLen)+1) = data(param.dispCH+1,:);
-    param.dispPos = mod(param.dispPos+lenRx-1,param.dispLen)+1;
-    figure(100);subplot(211);
-    plot(1/param.fs:1/param.fs:param.dispLen/param.fs,[param.dispSig(param.dispPos:end),param.dispSig(1:param.dispPos-1)]);grid on;box on;
-    xlabel('Time(s)');ylabel('Amplitude(V)');title('time domain');
-
-    Len = mod(param.dispPos-param.specCalPos-1,param.dispLen)+1;
-    Num = floor((Len-param.specYLen+param.specStep)/param.specStep);
-    while (Num > 0)
-	    idx = mod(param.specCalPos+(1:param.specYLen)-1,param.dispLen)+1;
-	    param.specData(:,param.specXPos) = transpose(abs(fft(param.dispSig(idx))));
-%         disp(num2str([Num,idx([1,end]),param.specCalPos,param.specXPos]));
-	    param.specXPos = mod(param.specXPos,param.specXLen)+1;
-	    param.specCalPos = mod(param.specCalPos+param.specStep-1,param.dispLen)+1;
-	    Num = Num-1;
-    end
-    figure(100);subplot(212);
-    imagesc((1:param.specXLen)/param.specXLen*param.dispFactor,(1:param.specYLen/2)/param.specYLen*param.fs,param.specData(1:param.specYLen/2,[param.specXPos:end,1:param.specXPos-1]));
-    xlabel('Time(s)');ylabel('Frequency(V)');title('spectrogram');
+% 
+%     param.dispSig(mod(param.dispPos+(0:lenRx-1)-1,param.dispLen)+1) = data(param.dispCH+1,:);
+%     param.dispPos = mod(param.dispPos+lenRx-1,param.dispLen)+1;
+%     figure(100);subplot(211);
+%     plot(1/param.fs:1/param.fs:param.dispLen/param.fs,[param.dispSig(param.dispPos:end),param.dispSig(1:param.dispPos-1)]);grid on;box on;
+%     xlabel('Time(s)');ylabel('Amplitude(V)');title('time domain');
+% 
+%     Len = mod(param.dispPos-param.specCalPos-1,param.dispLen)+1;
+%     Num = floor((Len-param.specYLen+param.specStep)/param.specStep);
+%     while (Num > 0)
+% 	    idx = mod(param.specCalPos+(1:param.specYLen)-1,param.dispLen)+1;
+% 	    param.specData(:,param.specXPos) = transpose(abs(fft(param.dispSig(idx))));
+% %         disp(num2str([Num,idx([1,end]),param.specCalPos,param.specXPos]));
+% 	    param.specXPos = mod(param.specXPos,param.specXLen)+1;
+% 	    param.specCalPos = mod(param.specCalPos+param.specStep-1,param.dispLen)+1;
+% 	    Num = Num-1;
+%     end
+%     figure(100);subplot(212);
+%     imagesc((1:param.specXLen)/param.specXLen*param.dispFactor,(1:param.specYLen/2)/param.specYLen*param.fs,param.specData(1:param.specYLen/2,[param.specXPos:end,1:param.specXPos-1]));
+%     xlabel('Time(s)');ylabel('Frequency(V)');title('spectrogram');
 end
 
